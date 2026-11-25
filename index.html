@@ -764,43 +764,42 @@ footer {
   </p>
 </footer>
 <script>
-document.getElementById("distributionForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
+document.getElementById("distributionForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-  const form = this;
-  const status = document.getElementById("formStatus");
-  const button = form.querySelector(".submit");
+    const form = this;
+    const status = document.getElementById("formStatus");
+    const button = form.querySelector(".submit");
 
-  button.disabled = true;
-  button.textContent = "Отправляем...";
-  status.style.display = "block";
-  status.textContent = "";
+    button.disabled = true;
+    button.textContent = "Отправляем...";
+    status.style.display = "block";
+    status.textContent = "Отправляем заявку...";
 
-  try {
-    const response = await fetch(form.action, {
-      method: "POST",
-      body: new FormData(form),
-      headers: {
-        "Accept": "application/json"
-      }
+    fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: {
+            "Accept": "application/json"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            status.textContent = "✓ Заявка успешно отправлена!";
+            status.style.color = "#83d7b0";
+            form.reset();
+        } else {
+            throw new Error("Ошибка");
+        }
+    })
+    .catch(() => {
+        status.textContent = "Не удалось отправить. Попробуйте позже.";
+        status.style.color = "#ff8b8b";
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.textContent = "Отправить заявку →";
     });
-
-    const result = await response.json();
-
-    if (response.ok && result.success) {
-      status.textContent = "✓ Заявка успешно отправлена!";
-      status.style.color = "#83d7b0";
-      form.reset();
-    } else {
-      throw new Error("Ошибка отправки");
-    }
-  } catch (error) {
-    status.textContent = "Не удалось отправить. Попробуйте позже.";
-    status.style.color = "#ff8b8b";
-  }
-
-  button.disabled = false;
-  button.textContent = "Отправить заявку →";
 });
 </script>
 </body>
